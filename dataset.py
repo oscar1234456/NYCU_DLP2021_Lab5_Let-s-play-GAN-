@@ -5,6 +5,9 @@ from torchvision import transforms
 from PIL import Image
 import os
 import numpy as np
+import matplotlib.pyplot as plt
+import parameters
+import torchvision.utils as vutils
 
 def get_iCLEVR_data(root_folder,mode):
     if mode == 'train':
@@ -33,8 +36,9 @@ def get_iCLEVR_data(root_folder,mode):
 
 
 class ICLEVRLoader(data.Dataset):
-    def __init__(self, root_folder, trans=None, cond=False, mode='train'):
+    def __init__(self, root_folder, image_folder, trans=None, cond=False, mode='train'):
         self.root_folder = root_folder
+        self.image_folder = image_folder
         self.mode = mode
         self.img_list, self.label_list = get_iCLEVR_data(root_folder,mode)
         if self.mode == 'train':
@@ -53,35 +57,37 @@ class ICLEVRLoader(data.Dataset):
             "train": transforms.Compose(
                 [
                     # Try Different Transform
-                    transforms.RandomRotation(degrees=(0, 360)),
-                    # transforms.RandomResizedCrop(224),
-                    # transforms.Resize(260),
-                    # transforms.CenterCrop(224),
-                    # transforms.RandomHorizontalFlip(),
-                    # transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
-                    # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-                    # transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-                    # transforms.Normalize([0.4693, 0.3225, 0.2287], [0.1974, 0.1399, 0.1014])
-                    transforms.Resize(224),
+                    transforms.Resize((parameters.image_size, parameters.image_size)),
                     transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
-                ]
-            ),
-            "test": transforms.Compose(
-                [
-                    transforms.Resize(224),
-                    transforms.ToTensor(),
+                    transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
                 ]
             ),
         }
-        img_path = self.root + '/' + self.img_name[index] + '.jpeg'
+        img_path = self.image_folder + '/' + self.img_list[index]
         image = Image.open(img_path).convert('RGB')
-        label = self.label[index]
+        label = self.label_list[index]
         imageConvert = data_transform[self.mode](image)
         return imageConvert, label
 
 
 if __name__ == "__main__":
-    label = get_iCLEVR_data("./data", "test")
-    # print(img)
-    print("--")
-    print(label)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # label = get_iCLEVR_data("./data", "test")
+    # # print(img)
+    # print("--")
+    # print(label)
+    train_data = ICLEVRLoader("./data", "./images")
+    # img, label = train_data[4]
+    # plt.figure()
+    # img_tran = img.numpy().transpose((1, 2, 0))
+    # plt.imshow(img_tran)
+    # plt.show()
+    dataloader = torch.utils.data.DataLoader(train_data, batch_size=parameters.batch_size,
+                                             shuffle=True, num_workers=parameters.workers)
+    print(len(dataloader))
+    real_batch = next(iter(dataloader))
+    plt.figure(figsize=(8, 8))
+    plt.axis("off")
+    plt.title("Training Images")
+    plt.imshow(np.transpose(vutils.make_grid(real_batch[0].to(device)[:64], padding=2, normalize=True).cpu(), (1, 2, 0)))
+    plt.show()
