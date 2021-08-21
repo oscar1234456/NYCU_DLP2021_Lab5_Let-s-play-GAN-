@@ -32,7 +32,8 @@ print(f"Using device:{device}")
 train_data = ICLEVRLoader("./data", "./images")
 train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=parameters.batch_size,
                                          shuffle=True, num_workers=parameters.workers)
-
+train_dataloader_dis = torch.utils.data.DataLoader(train_data, batch_size=parameters.batch_size,
+                                         shuffle=True,num_workers=parameters.workers )    
 ##generatorNN
 generatorNN = Generator().to(device)
 
@@ -62,13 +63,13 @@ real_label = 1.
 fake_label = 0.
 
 # Setup Adam optimizers for both G and D
-optimizerD = optim.Adam(discriminatorNN.parameters(), lr=0.0002, betas=(parameters.beta1, 0.999))
-optimizerG = optim.Adam(generatorNN.parameters(), lr=parameters.lr, betas=(parameters.beta1, 0.999))
-
-
+# optimizerD = optim.Adam(discriminatorNN.parameters(), lr=0.0002, betas=(parameters.beta1, 0.999))
+# optimizerG = optim.Adam(generatorNN.parameters(), lr=parameters.lr, betas=(parameters.beta1, 0.999))
+optimizerD = optim.RMSprop(discriminatorNN.parameters(), lr=parameters.lr)
+optimizerG = optim.RMSprop(generatorNN.parameters(), lr=parameters.lr)
 
 ##Training Process
-generator_final, discriminator_final,  img_list= train(generatorNN, discriminatorNN, parameters.num_epochs, parameters.nz, train_dataloader, criterion, optimizerD, optimizerG, device)
+generator_final, discriminator_final,  img_list= train(generatorNN, discriminatorNN, parameters.num_epochs, parameters.nz, train_dataloader, criterion, optimizerD, optimizerG, device,train_dataloader_dis)
 #generator, discriminator, num_epochs, latent_size, trainDataloader, criterion,optimizerD,optimizerG ,device
 
 ## Save model
