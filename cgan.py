@@ -78,16 +78,16 @@ optimizerG = optim.Adam(generatorNN.parameters(), lr=0.001, betas=(parameters.be
 generator_final, discriminator_final,  img_list, (G_losses, D_losses) = train(generatorNN, discriminatorNN, parameters.num_epochs, parameters.nz, train_dataloader, criterion, optimizerD, optimizerG, device,test_dataloader)
 
 ## Save model
-torch.save(generator_final.state_dict(), './modelWeight/0822Test5/generator_weight1.pth')
-torch.save(discriminator_final.state_dict(), './modelWeight/0822Test5/discriminator_weight1.pth')
+torch.save(generator_final.state_dict(), './modelWeight/0822Test6/generator_weight1.pth')
+torch.save(discriminator_final.state_dict(), './modelWeight/0822Test6/discriminator_weight1.pth')
 
 ##Save result
 losses_data = (G_losses,D_losses)
 
-with open('./modelWeight/0822Test5/pic.pickle', 'wb') as f:
+with open('./modelWeight/0822Test6/pic.pickle', 'wb') as f:
     pickle.dump(img_list, f)
 
-with open('./modelWeight/0822Test5/loss.pickle', 'wb') as f:
+with open('./modelWeight/0822Test6/loss.pickle', 'wb') as f:
     pickle.dump(losses_data, f)
 ##
 #%%capture
