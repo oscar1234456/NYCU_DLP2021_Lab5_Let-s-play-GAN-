@@ -2,10 +2,10 @@
 # dataroot = "data/celeba"
 
 # Number of workers for dataloader
-workers = 1
+workers = 4
 
 # Batch size during training
-batch_size = 64
+batch_size = 32
 
 # Spatial size of training images. All images will be resized to this
 #   size using a transformer.
@@ -24,10 +24,10 @@ ngf = 64
 ndf = 64
 
 # Number of training epochs
-num_epochs = 50
+num_epochs = 150
 
 # Learning rate for optimizers
-lr = 0.0005
+lr = 0.0002
 
 # Beta1 hyperparam for Adam optimizers
 beta1 = 0.5

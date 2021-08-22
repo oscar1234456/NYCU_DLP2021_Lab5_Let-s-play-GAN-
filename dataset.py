@@ -63,11 +63,16 @@ class ICLEVRLoader(data.Dataset):
                 ]
             ),
         }
-        img_path = self.image_folder + '/' + self.img_list[index]
-        image = Image.open(img_path).convert('RGB')
-        label = self.label_list[index]
-        imageConvert = data_transform[self.mode](image)
-        return imageConvert, label
+        if self.mode == "train":
+            img_path = self.image_folder + '/' + self.img_list[index]
+            image = Image.open(img_path).convert('RGB')
+            label = self.label_list[index]
+            imageConvert = data_transform[self.mode](image)
+        else:
+            label = self.label_list[index]
+            imageConvert = 0
+
+        return imageConvert, torch.from_numpy(label).type(torch.float)
 
 
 if __name__ == "__main__":

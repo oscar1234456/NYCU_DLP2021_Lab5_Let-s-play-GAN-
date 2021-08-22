@@ -33,7 +33,11 @@ train_data = ICLEVRLoader("./data", "./images")
 train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=parameters.batch_size,
                                          shuffle=True, num_workers=parameters.workers)
 train_dataloader_dis = torch.utils.data.DataLoader(train_data, batch_size=parameters.batch_size,
-                                         shuffle=True,num_workers=parameters.workers )    
+                                         shuffle=True,num_workers=parameters.workers )
+
+test_data = ICLEVRLoader("./data", "./images", mode="test")
+test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=32,
+                                         shuffle=True, num_workers=parameters.workers)
 ##generatorNN
 generatorNN = Generator().to(device)
 
@@ -63,22 +67,23 @@ real_label = 1.
 fake_label = 0.
 
 # Setup Adam optimizers for both G and D
-# optimizerD = optim.Adam(discriminatorNN.parameters(), lr=0.0002, betas=(parameters.beta1, 0.999))
-# optimizerG = optim.Adam(generatorNN.parameters(), lr=parameters.lr, betas=(parameters.beta1, 0.999))
-optimizerD = optim.RMSprop(discriminatorNN.parameters(), lr=parameters.lr)
-optimizerG = optim.RMSprop(generatorNN.parameters(), lr=parameters.lr)
+optimizerD = optim.Adam(discriminatorNN.parameters(), lr=parameters.lr, betas=(parameters.beta1, 0.999))
+optimizerG = optim.Adam(generatorNN.parameters(), lr=parameters.lr, betas=(parameters.beta1, 0.999))
+# optimizerD = optim.RMSprop(discriminatorNN.parameters(), lr=parameters.lr)
+# optimizerG = optim.RMSprop(generatorNN.parameters(), lr=parameters.lr)
 
 ##Training Process
-generator_final, discriminator_final,  img_list= train(generatorNN, discriminatorNN, parameters.num_epochs, parameters.nz, train_dataloader, criterion, optimizerD, optimizerG, device,train_dataloader_dis)
+# generator_final, discriminator_final,  img_list= train(generatorNN, discriminatorNN, parameters.num_epochs, parameters.nz, train_dataloader, criterion, optimizerD, optimizerG, device,train_dataloader_dis)
 #generator, discriminator, num_epochs, latent_size, trainDataloader, criterion,optimizerD,optimizerG ,device
+generator_final, discriminator_final,  img_list= train(generatorNN, discriminatorNN, parameters.num_epochs, parameters.nz, train_dataloader, criterion, optimizerD, optimizerG, device,test_dataloader)
 
 ## Save model
-torch.save(generator_final.state_dict(), './modelWeight/0820Test1/generator_weight1.pth')
-torch.save(discriminator_final.state_dict(), './modelWeight/0820Test1/discriminator_weight1.pth')
+torch.save(generator_final.state_dict(), './modelWeight/0822Test3/generator_weight1.pth')
+torch.save(discriminator_final.state_dict(), './modelWeight/0822Test3/discriminator_weight1.pth')
 
 
 ##Save result
-with open('./modelWeight/0820Test1/pic.pickle', 'wb') as f:
+with open('./modelWeight/0822Test3/pic.pickle', 'wb') as f:
     pickle.dump(img_list, f)
 ##
 #%%capture
