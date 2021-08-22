@@ -123,7 +123,7 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
             print("Best Model! Saved!")
             bestGWeight = copy.deepcopy(generator.state_dict())
             bestDWeight = copy.deepcopy(discriminator.state_dict())
-
+            bestAcc = acc
         # iters += 1
 
     time_elapsed = time.time() - since
