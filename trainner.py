@@ -26,7 +26,7 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
     fixed_noise = torch.randn(64, parameters.nz, 1, 1, device=device)
     since = time.time()
     # Training Loop
-
+    discriminator.train()
     # Lists to keep track of progress
     img_list = []
     G_losses = []
@@ -114,16 +114,18 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
                 acc = evalModel.eval(fake.cuda(), data[1])
         generator.train()
         img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
-        # fig = plt.figure(figsize=(8, 8))
-        # plt.axis("off")
-        # plt.imshow(np.transpose(img_list[-1], (1, 2, 0)))
-        # plt.show()
+        fig = plt.figure(figsize=(8, 8))
+        plt.axis("off")
+        plt.imshow(np.transpose(img_list[-1], (1, 2, 0)))
+        plt.show()
         print(f"acc->{acc}")
         if acc > bestAcc:
             print("Best Model! Saved!")
             bestGWeight = copy.deepcopy(generator.state_dict())
             bestDWeight = copy.deepcopy(discriminator.state_dict())
             bestAcc = acc
+            torch.save(bestGWeight, './modelWeight/0822Test5/generator_weight1.pth')
+            torch.save(bestDWeight, './modelWeight/0822Test5/discriminator_weight1.pth')
         # iters += 1
 
     time_elapsed = time.time() - since
@@ -138,7 +140,8 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
     plt.show()
     generator.load_state_dict(bestGWeight)
     discriminator.load_state_dict(bestDWeight)
-    return generator, discriminator,  img_list
+    print(f"Best ACC:{bestAcc}")
+    return generator, discriminator,  img_list,(G_losses,D_losses)
 
 ## WGAN
 # def resetGrad(generator, discriminator):
