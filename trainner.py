@@ -26,7 +26,7 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
     fixed_noise = torch.randn(64, parameters.nz, 1, 1, device=device)
     since = time.time()
     # Training Loop
-    discriminator.train()
+
     # Lists to keep track of progress
     img_list = []
     G_losses = []
@@ -42,6 +42,7 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
     # For each epoch
     for epoch in range(num_epochs):
         for i, data in enumerate(trainDataloader, 0):
+            discriminator.train()
             discriminator.zero_grad()
             # Format batch
             real_cpu = data[0].to(device)
@@ -86,6 +87,7 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
             generator.zero_grad()
             label.fill_(real_label)  # fake labels are real for generator cost
             # Since we just updated D, perform another forward pass of all-fake batch through D
+            discriminator.eval()
             output = discriminator(fake, breed).view(-1)
             # Calculate G's loss based on this output
             errG = criterion(output, label)
@@ -124,8 +126,8 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
             bestGWeight = copy.deepcopy(generator.state_dict())
             bestDWeight = copy.deepcopy(discriminator.state_dict())
             bestAcc = acc
-            torch.save(bestGWeight, './modelWeight/0822Test5/generator_weight1.pth')
-            torch.save(bestDWeight, './modelWeight/0822Test5/discriminator_weight1.pth')
+            torch.save(bestGWeight, './modelWeight/0822Test6/generator_weight1.pth')
+            torch.save(bestDWeight, './modelWeight/0822Test6/discriminator_weight1.pth')
         # iters += 1
 
     time_elapsed = time.time() - since

@@ -80,12 +80,12 @@ class Discriminator(nn.Module):
             nn.Conv2d(parameters.ndf * 2, parameters.ndf * 4, 4, 2, 1, bias=False),
             nn.BatchNorm2d(parameters.ndf * 4),
             nn.LeakyReLU(0.2, inplace=True),
-            # nn.Dropout2d(),
+            nn.Dropout2d(),
             # state size. (ndf*4) x 8 x 8
             nn.Conv2d(parameters.ndf * 4, parameters.ndf * 8, 4, 2, 1, bias=False),
             nn.BatchNorm2d(parameters.ndf * 8),
             nn.LeakyReLU(0.2, inplace=True),
-            # nn.Dropout2d(),
+            nn.Dropout2d(),
             # state size. (ndf*8) x 4 x 4
             nn.Conv2d(parameters.ndf * 8, 1, 4, 1, 0, bias=False),
             #TODO: WGAN
