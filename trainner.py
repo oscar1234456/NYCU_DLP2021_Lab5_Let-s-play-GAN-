@@ -5,7 +5,10 @@ import parameters
 import torchvision.utils as vutils
 import matplotlib.pyplot as plt
 import numpy as np
+
+from dataset import labelLoader
 from evaluator import evaluation_model
+import copy
 # Set random seed for reproducibility
 # manualSeed = 999
 # #manualSeed = random.randint(1, 10000) # use if you want new results
@@ -14,6 +17,9 @@ from evaluator import evaluation_model
 # torch.manual_seed(manualSeed)
 
 def train(generator, discriminator, num_epochs, latent_size, trainDataloader, criterion,optimizerD,optimizerG ,device,test_dataloader):
+    bestAcc=-999
+    bestGWeight = copy.deepcopy(generator.state_dict())
+    bestDWeight= copy.deepcopy(discriminator.state_dict())
     evalModel = evaluation_model()
     real_label = 1.
     fake_label = 0.
@@ -27,6 +33,7 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
     D_losses = []
     iters = 0
 
+    label_data = labelLoader("./data")
     # pickRandom = random.randint(1, 10)
     # for i in range(1, pickRandom):
     #     breed_old = next(iter(trainDataloader))[1]
@@ -58,12 +65,14 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
             errD_fake = criterion(output, label)
             # Calculate the gradients for this batch, accumulated (summed) with previous gradients
             #real data/error condition
-            # real_errCond_output = discriminator(real_cpu, breed_old).view(-1)
-            # real_errCond_err = criterion(real_errCond_output, label)
+            breed_old = label_data.getRandomLabel(b_size)
+            breed_old = breed_old.to(device)
+            real_errCond_output = discriminator(real_cpu, breed_old).view(-1)
+            real_errCond_err = criterion(real_errCond_output, label)
             #
-            # totalError = real_errCond_err + errD_fake
-            # totalError.backward()
-            errD_fake.backward()
+            totalError = real_errCond_err + errD_fake
+            totalError.backward()
+            #errD_fake.backward()
 
             D_G_z1 = output.mean().item()
             # Compute error of D as sum over the fake and the real batches
@@ -87,7 +96,7 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
             optimizerG.step()
 
             # Output training stats
-            if i % 50 == 0:
+            if i % 10 == 0:
                 print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f'
                       % (epoch, num_epochs, i, len(trainDataloader),
                          errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
@@ -96,23 +105,25 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
             G_losses.append(errG.item())
             D_losses.append(errD.item())
 
-            # Check how the generator is doing by saving G's output on fixed_noise
-            if (iters % 5 == 0) or ((epoch == num_epochs - 1) and (i == len(trainDataloader) - 1)):
-                generator.eval()
-                with torch.no_grad():
-                    for _, data in enumerate(test_dataloader, 0):
-                        noise_test = torch.randn(32, parameters.nz, 1, 1, device=device)
-                        fake = generator(noise_test, data[1].to(device)).detach().cpu()
-                        acc = evalModel.eval(fake.cuda(), data[1])
-                generator.train()
-                img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
-                # fig = plt.figure(figsize=(8, 8))
-                # plt.axis("off")
-                # plt.imshow(np.transpose(img_list[-1], (1, 2, 0)))
-                # plt.show()
-                print(f"acc->{acc}")
+        print("Epoch Evaluating....")
+        generator.eval()
+        with torch.no_grad():
+            for _, data in enumerate(test_dataloader, 0):
+                noise_test = torch.randn(32, parameters.nz, 1, 1, device=device)
+                fake = generator(noise_test, data[1].to(device)).detach().cpu()
+                acc = evalModel.eval(fake.cuda(), data[1])
+        generator.train()
+        img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
+        fig = plt.figure(figsize=(8, 8))
+        plt.axis("off")
+        plt.imshow(np.transpose(img_list[-1], (1, 2, 0)))
+        plt.show()
+        print(f"acc->{acc}")
+        if acc > bestAcc:
+            bestGWeight = copy.deepcopy(generator.state_dict())
+            bestDWeight = copy.deepcopy(discriminator.state_dict())
 
-            iters += 1
+        # iters += 1
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -124,6 +135,8 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
     plt.ylabel("Loss")
     plt.legend()
     plt.show()
+    generator.load_state_dict(bestGWeight)
+    discriminator.load_state_dict(bestDWeight)
     return generator, discriminator,  img_list
 
 ## WGAN

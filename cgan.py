@@ -32,12 +32,13 @@ print(f"Using device:{device}")
 train_data = ICLEVRLoader("./data", "./images")
 train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=parameters.batch_size,
                                          shuffle=True, num_workers=parameters.workers)
-train_dataloader_dis = torch.utils.data.DataLoader(train_data, batch_size=parameters.batch_size,
-                                         shuffle=True,num_workers=parameters.workers )
+# train_dataloader_dis = torch.utils.data.DataLoader(train_data, batch_size=parameters.batch_size,
+#                                          shuffle=True,num_workers=parameters.workers )
 
 test_data = ICLEVRLoader("./data", "./images", mode="test")
-test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=32,
-                                         shuffle=True, num_workers=parameters.workers)
+test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=32,shuffle=True, num_workers=parameters.workers)
+
+
 ##generatorNN
 generatorNN = Generator().to(device)
 
@@ -78,12 +79,12 @@ optimizerG = optim.Adam(generatorNN.parameters(), lr=parameters.lr, betas=(param
 generator_final, discriminator_final,  img_list= train(generatorNN, discriminatorNN, parameters.num_epochs, parameters.nz, train_dataloader, criterion, optimizerD, optimizerG, device,test_dataloader)
 
 ## Save model
-torch.save(generator_final.state_dict(), './modelWeight/0822Test4/generator_weight1.pth')
-torch.save(discriminator_final.state_dict(), './modelWeight/0822Test4/discriminator_weight1.pth')
+torch.save(generator_final.state_dict(), './modelWeight/0822Test3/generator_weight1.pth')
+torch.save(discriminator_final.state_dict(), './modelWeight/0822Test3/discriminator_weight1.pth')
 
 
 ##Save result
-with open('./modelWeight/0822Test4/pic.pickle', 'wb') as f:
+with open('./modelWeight/0822Test3/pic.pickle', 'wb') as f:
     pickle.dump(img_list, f)
 ##
 #%%capture

@@ -74,33 +74,49 @@ class ICLEVRLoader(data.Dataset):
 
         return imageConvert, torch.from_numpy(label).type(torch.float)
 
+class labelLoader():
+    def __init__(self,root_folder):
+        self.img_list, self.label_list = get_iCLEVR_data(root_folder, mode="train")
+        self.label_list_len = len(self.label_list)
+    def getRandomLabel(self, batch_size):
+        rInt = np.random.randint(0, high=self.label_list_len-1, size=batch_size)
+        # result = torch.Tensor([[]])
+        # result  = [torch.from_numpy(self.label_list[i]).type(torch.float) for i in rInt]
+        result = torch.from_numpy(self.label_list[rInt[0]]).type(torch.float).view(1,-1)
+        for i in range(1,len(rInt)):
+            result = torch.cat((result,torch.from_numpy(self.label_list[rInt[i]]).type(torch.float).view(1,-1)), 0)
+        return result
+
 
 if __name__ == "__main__":
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    labelTest = labelLoader("./data")
+    a = labelTest.getRandomLabel(128)
     # label = get_iCLEVR_data("./data", "test")
     # # print(img)
     # print("--")
     # print(label)
-    train_data = ICLEVRLoader("./data", "./images")
-    # img, label = train_data[4]
-    # plt.figure()
-    # img_tran = img.numpy().transpose((1, 2, 0))
-    # plt.imshow(img_tran)
+    # train_data = ICLEVRLoader("./data", "./images")
+    # # img, label = train_data[4]
+    # # plt.figure()
+    # # img_tran = img.numpy().transpose((1, 2, 0))
+    # # plt.imshow(img_tran)
+    # # plt.show()
+    # dataloader = torch.utils.data.DataLoader(train_data, batch_size=parameters.batch_size,
+    #                                          shuffle=True, num_workers=parameters.workers)
+    # print(len(dataloader))
+    # real_batch = next(iter(dataloader))
+    # plt.figure(figsize=(8, 8))
+    # plt.axis("off")
+    # plt.title("Training Images")
+    # plt.imshow(np.transpose(vutils.make_grid(real_batch[0].to(device)[:64], padding=2, normalize=True).cpu(), (1, 2, 0)))
     # plt.show()
-    dataloader = torch.utils.data.DataLoader(train_data, batch_size=parameters.batch_size,
-                                             shuffle=True, num_workers=parameters.workers)
-    print(len(dataloader))
-    real_batch = next(iter(dataloader))
-    plt.figure(figsize=(8, 8))
-    plt.axis("off")
-    plt.title("Training Images")
-    plt.imshow(np.transpose(vutils.make_grid(real_batch[0].to(device)[:64], padding=2, normalize=True).cpu(), (1, 2, 0)))
-    plt.show()
-
-    real_batch = next(iter(dataloader))
-    plt.figure(figsize=(8, 8))
-    plt.axis("off")
-    plt.title("Training Images")
-    plt.imshow(
-    np.transpose(vutils.make_grid(real_batch[0].to(device)[:64], padding=2, normalize=True).cpu(), (1, 2, 0)))
-    plt.show()
+    #
+    # real_batch = next(iter(dataloader))
+    # plt.figure(figsize=(8, 8))
+    # plt.axis("off")
+    # plt.title("Training Images")
+    # plt.imshow(
+    # np.transpose(vutils.make_grid(real_batch[0].to(device)[:64], padding=2, normalize=True).cpu(), (1, 2, 0)))
+    # plt.show()
+    print("")
