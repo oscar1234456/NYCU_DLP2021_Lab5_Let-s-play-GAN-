@@ -42,7 +42,7 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
     # For each epoch
     for epoch in range(num_epochs):
         for i, data in enumerate(trainDataloader, 0):
-            discriminator.train()
+            # discriminator.train()
             discriminator.zero_grad()
             # Format batch
             real_cpu = data[0].to(device)
@@ -87,7 +87,7 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
             generator.zero_grad()
             label.fill_(real_label)  # fake labels are real for generator cost
             # Since we just updated D, perform another forward pass of all-fake batch through D
-            discriminator.eval()
+            # discriminator.eval()
             output = discriminator(fake, breed).view(-1)
             # Calculate G's loss based on this output
             errG = criterion(output, label)
