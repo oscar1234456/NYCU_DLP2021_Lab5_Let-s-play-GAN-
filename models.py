@@ -9,13 +9,13 @@ class Generator(nn.Module):
 
         self.ylabel = nn.Sequential(
             nn.Linear(24, 192),
-            # nn.ReLU(True)
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.ReLU(True)
+            # nn.LeakyReLU(0.2, inplace=True),
         )
 
         self.yz = nn.Sequential(
             nn.Linear(100, 200),
-            # nn.ReLU(True)
+            nn.ReLU(True)
         )
 
         self.main = nn.Sequential(

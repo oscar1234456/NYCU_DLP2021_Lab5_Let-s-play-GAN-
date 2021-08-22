@@ -114,12 +114,13 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
                 acc = evalModel.eval(fake.cuda(), data[1])
         generator.train()
         img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
-        fig = plt.figure(figsize=(8, 8))
-        plt.axis("off")
-        plt.imshow(np.transpose(img_list[-1], (1, 2, 0)))
-        plt.show()
+        # fig = plt.figure(figsize=(8, 8))
+        # plt.axis("off")
+        # plt.imshow(np.transpose(img_list[-1], (1, 2, 0)))
+        # plt.show()
         print(f"acc->{acc}")
         if acc > bestAcc:
+            print("Best Model! Saved!")
             bestGWeight = copy.deepcopy(generator.state_dict())
             bestDWeight = copy.deepcopy(discriminator.state_dict())
 
