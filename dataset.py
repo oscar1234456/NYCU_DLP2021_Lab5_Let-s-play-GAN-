@@ -22,9 +22,21 @@ def get_iCLEVR_data(root_folder,mode):
             tmp[label[i]] = 1
             label[i] = tmp
         return np.squeeze(img), np.squeeze(label)
-    else:
+    elif mode=='test':
         data = json.load(open(os.path.join(root_folder,'test.json')))
         obj = json.load(open(os.path.join(root_folder,'objects.json')))
+        label = data
+        for i in range(len(label)):
+            for j in range(len(label[i])):
+                label[i][j] = obj[label[i][j]]
+            tmp = np.zeros(len(obj))
+            tmp[label[i]] = 1
+            label[i] = tmp
+        return None, label
+    else:
+        #for new_test
+        data = json.load(open(os.path.join(root_folder, 'new_test.json')))
+        obj = json.load(open(os.path.join(root_folder, 'objects.json')))
         label = data
         for i in range(len(label)):
             for j in range(len(label[i])):
@@ -80,8 +92,6 @@ class labelLoader():
         self.label_list_len = len(self.label_list)
     def getRandomLabel(self, batch_size):
         rInt = np.random.randint(0, high=self.label_list_len-1, size=batch_size)
-        # result = torch.Tensor([[]])
-        # result  = [torch.from_numpy(self.label_list[i]).type(torch.float) for i in rInt]
         result = torch.from_numpy(self.label_list[rInt[0]]).type(torch.float).view(1,-1)
         for i in range(1,len(rInt)):
             result = torch.cat((result,torch.from_numpy(self.label_list[rInt[i]]).type(torch.float).view(1,-1)), 0)

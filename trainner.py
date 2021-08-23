@@ -64,13 +64,12 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
             output = discriminator(fake.detach(), breed).view(-1)
             # Calculate D's loss on the all-fake batch
             errD_fake = criterion(output, label)
-            # Calculate the gradients for this batch, accumulated (summed) with previous gradients
             #real data/error condition
             breed_old = label_data.getRandomLabel(b_size)
             breed_old = breed_old.to(device)
             real_errCond_output = discriminator(real_cpu, breed_old).view(-1)
             real_errCond_err = criterion(real_errCond_output, label)
-            #
+
             totalError = real_errCond_err + errD_fake
             totalError.backward()
             #errD_fake.backward()
@@ -126,8 +125,8 @@ def train(generator, discriminator, num_epochs, latent_size, trainDataloader, cr
             bestGWeight = copy.deepcopy(generator.state_dict())
             bestDWeight = copy.deepcopy(discriminator.state_dict())
             bestAcc = acc
-            torch.save(bestGWeight, './modelWeight/0822Test6/generator_weight1.pth')
-            torch.save(bestDWeight, './modelWeight/0822Test6/discriminator_weight1.pth')
+            torch.save(bestGWeight, './modelWeight/0822Test7/generator_weight1.pth')
+            torch.save(bestDWeight, './modelWeight/0822Test7/discriminator_weight1.pth')
         # iters += 1
 
     time_elapsed = time.time() - since

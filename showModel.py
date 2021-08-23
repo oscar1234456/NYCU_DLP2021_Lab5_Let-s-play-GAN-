@@ -29,7 +29,7 @@ test_data = ICLEVRLoader("./data", "./images", mode="test")
 test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=32,shuffle=False, num_workers=parameters.workers)
 
 #For Demo Day:
-# test_data_new = ICLEVRLoader("./data", "./images", mode="test")
+# test_data_new = ICLEVRLoader("./data", "./images", mode="new_test")
 # test_dataloader_new = torch.utils.data.DataLoader(test_data_new, batch_size=*****,shuffle=True, num_workers=parameters.workers)
 
 ##
