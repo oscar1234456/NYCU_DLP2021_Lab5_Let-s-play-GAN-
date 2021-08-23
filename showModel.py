@@ -1,10 +1,14 @@
 ##
-import torch
+import pickle
 
+import torch
+import torchvision.utils as vutils
 from evaluator import evaluation_model
 from models import Generator,Discriminator
 import parameters
 from dataset import ICLEVRLoader
+import numpy as np
+import matplotlib.pyplot as plt
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 ##Parameters
@@ -18,11 +22,11 @@ generator.to(device)
 
 
 ##
-generator.load_state_dict(torch.load('modelWeight/0822Test4/generator_weight1.pth'))
+generator.load_state_dict(torch.load('modelWeight/0822Test6/generator_weight1.pth'))
 
 ##Dataset
 test_data = ICLEVRLoader("./data", "./images", mode="test")
-test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=32,shuffle=True, num_workers=parameters.workers)
+test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=32,shuffle=False, num_workers=parameters.workers)
 
 #For Demo Day:
 # test_data_new = ICLEVRLoader("./data", "./images", mode="test")
@@ -42,6 +46,10 @@ with torch.no_grad():
         acc_ori = evalModel.eval(fake.cuda(), data[1])
 generator.train()
 print(f"original TestData ACC: {acc_ori}")
+fig = plt.figure(figsize=(8, 8))
+plt.axis("off")
+plt.imshow(np.transpose(vutils.make_grid(fake, padding=2, normalize=True), (1, 2, 0)))
+plt.show()
 
 ## New
 print("Evaluating New TestData Start! Please  wait!")
@@ -54,3 +62,14 @@ print("Evaluating New TestData Start! Please  wait!")
 #         acc_new = evalModel.eval(fake.cuda(), data[1])
 # generator.train()
 # print(f"new TestData ACC: {acc_new}")
+
+
+##
+with open('modelWeight/0822Test6/pic.pickle', 'rb') as f:
+    img_list = pickle.load(f)
+
+##
+fig = plt.figure(figsize=(8, 8))
+plt.axis("off")
+plt.imshow(np.transpose(img_list[99], (1, 2, 0)))
+plt.show()
