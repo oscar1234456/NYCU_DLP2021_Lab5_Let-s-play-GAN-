@@ -1,3 +1,11 @@
+#Author: 310551076 Oscar Chen
+#Course: NYCU DLP 2021 Summer
+#Title: Lab5 Let's play GANs
+#Date: 2021/08/21
+#Subject: Implementing the cGAN model to generate pictures with label
+#Email: oscarchen.cs10@nycu.edu.tw
+
+##
 import json
 import torch
 from torch.utils import data

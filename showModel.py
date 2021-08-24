@@ -1,6 +1,12 @@
+#Author: 310551076 Oscar Chen
+#Course: NYCU DLP 2021 Summer
+#Title: Lab5 Let's play GANs
+#Date: 2021/08/21
+#Subject: Implementing the cGAN model to generate pictures with label
+#Email: oscarchen.cs10@nycu.edu.tw
+
 ##
 import pickle
-
 import torch
 import torchvision.utils as vutils
 from evaluator import evaluation_model
@@ -15,14 +21,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #use parameters.py
 
 
-
 ##define model:
 generator = Generator()
 generator.to(device)
 
 
 ##
-generator.load_state_dict(torch.load('modelWeight/0822Test6/generator_weight1.pth'))
+generator.load_state_dict(torch.load('modelWeight/0822Test7/generator_weight1.pth'))
 
 ##Dataset
 test_data = ICLEVRLoader("./data", "./images", mode="test")
